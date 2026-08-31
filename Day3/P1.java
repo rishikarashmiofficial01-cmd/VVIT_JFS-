@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class P1 {
 
     // 'throws' declares that this method might throw a checked exception to caller
-    public static void validateAge(int age) throws IllegalArgumentException {
+    public static void validateAge(int age) {
         if (age < 18) {
             // 'throw' explicitly creates and raises an exception object
             throw new IllegalArgumentException("Age must be at least 18. Provided: " + age);
