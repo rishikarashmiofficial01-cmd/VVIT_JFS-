@@ -1,14 +1,12 @@
-package Day3;
+// Custom Checked Exception
+class InsufficientFundException extends Exception {
 
-// Custom checked exception
-class InsufficientFundsException extends Exception {
-
-    public InsufficientFundsException(String message) {
+    public InsufficientFundException(String message) {
         super(message);
     }
 }
 
-// BankAccount class
+// Bank Account class
 class BankAccount {
 
     private String accountNumber;
@@ -20,34 +18,38 @@ class BankAccount {
         this.balance = initialBalance;
     }
 
-    // Method to display account details
+    // Display account details
     public void displayAccountDetails() {
-        System.out.println("Account Number: " + accountNumber);
-        System.out.println("Current Balance: Rs." + balance);
+        System.out.println("Account Number : " + accountNumber);
+        System.out.println("Initial Balance: Rs." + balance);
     }
 
-    // Method to deposit money
+    // Deposit method
     public void deposit(double amount) {
-        if (amount > 0) {
-            balance += amount;
-            System.out.println(
-                    "Deposited: Rs." + amount +
-                            " | New Balance: Rs." + balance);
+        if (amount <= 0) {
+            System.out.println("Invalid deposit amount.");
+            return;
         }
+
+        balance += amount;
+
+        System.out.println(
+                "Deposited: Rs." + amount +
+                        " | Current Balance: Rs." + balance);
     }
 
-    // Method to withdraw money
-    // 'throws' declares the checked exception
-    public void withdraw(double amount) throws InsufficientFundsException {
+    // Withdraw method with checked exception
+    public void withdraw(double amount)
+            throws InsufficientFundException {
 
         if (amount > balance) {
+            throw new InsufficientFundException(
+                    "Insufficient funds! Available Balance: Rs." + balance);
+        }
 
-            double deficit = amount - balance;
-
-            // 'throw' explicitly creates and raises an exception
-            throw new InsufficientFundsException(
-                    "Withdrawal Failed: Overdraft limit reached. " +
-                            "Insufficient funds by Rs." + deficit);
+        if (amount <= 0) {
+            System.out.println("Invalid withdrawal amount.");
+            return;
         }
 
         balance -= amount;
@@ -64,74 +66,56 @@ public class P2 {
     public static void main(String[] args) {
 
         // --- 1. Handling Custom Checked Exception ---
+
         System.out.println(
                 "--- 1. Checked Custom Exception Handling ---");
 
-        BankAccount account = new BankAccount(
-                "ACC-9001",
-                500.0);
+        BankAccount account = new BankAccount("ACC-9001", 500.0);
 
         account.displayAccountDetails();
 
+        System.out.println();
+
+        // Successful withdrawal
         try {
-
-            System.out.println(
-                    "Attempting withdrawal of Rs.650...");
-
-            account.withdraw(650.0);
-
-        } catch (InsufficientFundsException e) {
-
-            System.out.println(
-                    "Error: " + e.getMessage());
-        }
-
-        // --- 2. Successful Withdrawal ---
-        System.out.println(
-                "\n--- 2. Successful Withdrawal ---");
-
-        try {
-
-            System.out.println(
-                    "Attempting withdrawal of Rs.200...");
 
             account.withdraw(200.0);
 
-        } catch (InsufficientFundsException e) {
+        } catch (InsufficientFundException e) {
 
             System.out.println(
-                    "Error: " + e.getMessage());
+                    "Exception: " + e.getMessage());
         }
 
-        // --- 3. Deposit ---
-        System.out.println(
-                "\n--- 3. Deposit Operation ---");
+        System.out.println();
 
-        account.deposit(1000.0);
-
-        account.displayAccountDetails();
-
-        // --- 4. Another Withdrawal ---
-        System.out.println(
-                "\n--- 4. Another Withdrawal ---");
-
+        // Withdrawal causing exception
         try {
 
-            System.out.println(
-                    "Attempting withdrawal of Rs.1000...");
+            account.withdraw(400.0);
 
-            account.withdraw(1000.0);
-
-        } catch (InsufficientFundsException e) {
+        } catch (InsufficientFundException e) {
 
             System.out.println(
-                    "Error: " + e.getMessage());
+                    "Exception: " + e.getMessage());
         }
 
-        // --- 5. Final Account Details ---
-        System.out.println(
-                "\n--- 5. Final Account Details ---");
+        System.out.println();
 
-        account.displayAccountDetails();
+        // Deposit
+        account.deposit(300.0);
+
+        System.out.println();
+
+        // Try withdrawal again
+        try {
+
+            account.withdraw(500.0);
+
+        } catch (InsufficientFundException e) {
+
+            System.out.println(
+                    "Exception: " + e.getMessage());
+        }
     }
 }
